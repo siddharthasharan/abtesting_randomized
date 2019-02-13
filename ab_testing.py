@@ -59,3 +59,24 @@ col_list.remove('LoggedInFlag')
 col_list.remove('ServerID')
 g_data['sum'] = g_data[col_list].sum(axis =1)
 g_data.head()
+
+#step 1a: get groups for total and percentage
+g_count = g_data.groupby('ServerID')['VisitPageFlag'].count().reset_index()
+g_sum = g_data.groupby('ServerID')['sum'].sum().reset_index()
+g_result = pd.merge(g_count, g_sum, on = 'ServerID')
+g_result['conversionpct'] = g_result['sum']/ g_result['VisitPageFlag']
+
+# Overall we see a 3% higher conversion in test vs. control group
+
+print(g_result)
+
+# NExt analyze the p-value to see if the results are significant and repeatable.
+# p-value should be less than 0.05
+from scipy.stats import ttest_ind
+
+test = g_data[g_data['ServerID']=='Test']
+control = g_data[g_data['ServerID']=='Control']
+
+ttest_ind(test['VisitPageFlag'], control['VisitPageFlag'])
+# Ttest_indResult(statistic=10.893835883797658, pvalue=1.3256687794335583e-27
+# p-value is less than 0.05 hence the results are significant
