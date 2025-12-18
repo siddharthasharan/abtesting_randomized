@@ -1,37 +1,67 @@
-## Welcome to GitHub Pages
+# Pair Coding IDE for Data Science
 
-You can use the [editor on GitHub](https://github.com/siddharthasharan/abtesting_randomized/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+This repository provides a lightweight foundation for building a collaborative, pair-programming IDE tailored for data science work. It focuses on the core primitives you need to coordinate notebooks, collaborators, datasets, and repeatable execution—all backed by a simple JSON workspace.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+## What’s included
 
-### Markdown
+- **Workspace orchestration**: Manage notebooks, sessions, and collaborators with the `paircoding` package.
+- **Cell execution engine**: Run code cells per session with isolated namespaces and captured output.
+- **Dataset registry**: Register CSV datasets, preview rows, and compute quick numeric summaries without heavy dependencies.
+- **CLI tools**: Scriptable commands to bootstrap workspaces, add cells, execute code, chat with teammates, and inspect datasets.
+- **Tests**: Pytest coverage for the critical workflows (notebook execution, dataset handling, and collaboration metadata).
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+## Quick start
 
-```markdown
-Syntax highlighted code block
+1. Create and activate a virtual environment (optional but recommended).
+2. Install dependencies:
 
-# Header 1
-## Header 2
-### Header 3
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-- Bulleted
-- List
+3. Initialize a workspace and create a notebook:
 
-1. Numbered
-2. List
+   ```bash
+   python -m paircoding.cli init --title "Exploration" --description "Joint analysis scratchpad"
+   ```
 
-**Bold** and _Italic_ and `Code` text
+   The command prints the new notebook ID and stores state at `.pairide/state.json` by default.
 
-[Link](url) and ![Image](src)
+4. Start a collaboration session and add a code cell:
+
+   ```bash
+   python -m paircoding.cli create-session "Morning pairing" <NOTEBOOK_ID>
+   python -m paircoding.cli add-cell <NOTEBOOK_ID> code --source "print('hello collaborators')"
+   ```
+
+5. Execute the cell inside the session:
+
+   ```bash
+   python -m paircoding.cli run-cell <SESSION_ID> <NOTEBOOK_ID> <CELL_ID>
+   ```
+
+6. Register and preview a dataset:
+
+   ```bash
+   python -m paircoding.cli register-dataset flights data/flights.csv --description "Aggregated flight stats"
+   python -m paircoding.cli preview-dataset flights --limit 3
+   ```
+
+## Package overview
+
+- `paircoding/models.py` — Dataclasses for notebooks, cells, sessions, collaborators, execution results, and datasets.
+- `paircoding/storage.py` — JSON persistence for the workspace state.
+- `paircoding/datasets.py` — CSV preview and numeric summaries for registered datasets.
+- `paircoding/executor.py` — Simple execution engine with isolated namespaces per session.
+- `paircoding/workspace.py` — High-level orchestration of notebooks, sessions, datasets, and execution.
+- `paircoding/cli.py` — Command-line interface for common workflows.
+
+## Running the test suite
+
+After installing dependencies, run:
+
+```bash
+python -m pytest
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/siddharthasharan/abtesting_randomized/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+The tests exercise notebook execution, dataset previews, and collaboration metadata to ensure the core workflows stay reliable as the IDE evolves.
