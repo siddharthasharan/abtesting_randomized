@@ -10,3 +10,5 @@ The guide includes:
 - GPT evaluation strategy,
 - fairness/safety controls, and
 - a phased build plan.
+- Role matrix + rubric weights (Issue 1): `docs/ROLE_MATRIX_RUBRIC.md`
+
